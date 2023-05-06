@@ -1,0 +1,20 @@
+|-- .gitignore
+|-- HISTORY.md
+|-- LICENSE
+|-- README.md
+|-- STRUCTURE
+|-- postnormalism/
+|   |-- VERSION
+|   |-- __init__.py
+|   |-- core.py
+|   |-- schema/
+|   |   |-- __init__.py
+|   |   |-- function.py
+|   |   |-- schema_item.py
+|   |   |-- table.py
+|   |-- utils.py
+|-- pyproject.toml
+|-- tests/
+|   |-- __init__.py
+|   |-- test_core.py
+|   |-- test_schema.py

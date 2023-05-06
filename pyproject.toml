@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "postnormalism"
+authors = [
+  { name="Zac Miller", email="zac@informatical.info" },
+]
+maintainers = [
+  { name="Zac Miller", email="zac@informatical.info" },
+]
+description = "Postnormalism is Not an Object Relational Mapper (NORM) it is a lightweight and simple-to-use Python library for managing PostgreSQL database schemas. It provides an easy way to define tables and functions, organize schema items, and create them in a database with a specified load order."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT License"}
+keywords = ["python", "postgresql", "schema"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+]
+dynamic = ["version"]
+
+[project.urls]
+"Homepage" = "https://github.com/jzmiller1/postnormalism"
+"Bug Tracker" = "https://github.com/jzmiller1/postnormalism/issues"
+"Repository" = "https://github.com/jzmiller1/postnormalism.git"
+"History" = "https://github.com/jzmiller1/postnormalism/blob/master/HISTORY.md"
+
+
+[tool.setuptools.dynamic]
+version = {file = "postnormalism/VERSION"}
