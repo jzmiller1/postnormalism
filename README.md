@@ -5,9 +5,11 @@ postnormalism is Not an Object Relational Mapper (NORM) it is a lightweight and 
 ## Features  
   
 - Define tables and functions using Python dataclasses  
-- Create schema items (Tables, Functions) with comments
-- Load schema items in a specified load order  
-- Group related schema items and create them within a single transaction  
+- Create database items (Tables, Functions) with comments
+- Group related database items and create them within a single transaction  
+- Create a Database object that allows loading database items in a specified load order and managing database extensions
+- IF NOT EXISTS mode for loading
+
   
 ## NORM vs. ORM: Features Comparison  
   
@@ -43,16 +45,18 @@ pip install postnormalism
   
 ## Usage  
   
-### Defining Schema Items  
+### Defining Database Items  
   
 To define a table or a function, use the `Table` and `Function` dataclasses from the `postnormalism` module:  
   
 ```python  
-from postnormalism import Table, Function  
+from postnormalism.schema import Table, Function  
 ```
   
 ### Define a Table
 ```python
+from postnormalism.schema import Table
+
 create_table_sql = """  
 CREATE TABLE material (  
 id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),  
@@ -66,6 +70,8 @@ Material = Table(create=create_table_sql)
   
 ### Define a Postgresql Function  
 ```python
+from postnormalism.schema import Function
+
 create_function_sql = """  
 CREATE FUNCTION get_material_for_variant(variant uuid)  
 RETURNS uuid  
@@ -85,21 +91,29 @@ $$ An example function $$;
 get_material_for_variant = Function(create=create_function_sql, comment=comment_function_sql)  
 ```  
   
-### Creating Schema Items in a Database  
+### Creating Database Items in a Database  
   
-To create schema items in a PostgreSQL database, use the `create_schema` function from the `postnormalism` module:  
+To create database items in a PostgreSQL database, use the `Database` class:  
   
 ```python  
 import psycopg  
-from postnormalism import create_schema  
+from postnormalism.schema import Database
 from your_example_file import Material, get_material_for_variant
 
-db_connection_string = "dbname=test user=postgres password=secret host=localhost port=5432"  
+universe = Database(
+    load_order=[
+        Material, get_material_for_variant,
+        [Player, Inventory],  # example of grouping DatabaseItems into a transaction
+    ],
+    extensions=['uuid-ossp', 'plpython3u', 'pgcrypto']
+)
+
+db_connection_string = "dbname=test user=postgres password=secret host=localhost port=port"  
 
 connection = psycopg.connect(db_connection_string)  
 cursor = connection.cursor()  
 
-create_schema([Material, get_material_for_variant], cursor)  
+universe.create(cursor)  
 
 connection.commit()  
 connection.close()  

@@ -9,8 +9,9 @@
 |   |-- core.py
 |   |-- schema/
 |   |   |-- __init__.py
+|   |   |-- database.py
+|   |   |-- database_item.py
 |   |   |-- function.py
-|   |   |-- schema_item.py
 |   |   |-- table.py
 |   |-- utils.py
 |-- pyproject.toml

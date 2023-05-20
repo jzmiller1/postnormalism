@@ -1,3 +1,4 @@
+from .database_item import DatabaseItem
 from .function import Function
 from .table import Table
-from .schema_item import SchemaItem
+from .database import Database
