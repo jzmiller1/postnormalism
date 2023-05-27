@@ -9,6 +9,7 @@ postnormalism is Not an Object Relational Mapper (NORM) it is a lightweight and 
 - Group related database items and create them within a single transaction  
 - Create a Database object that allows loading database items in a specified load order and managing database extensions
 - IF NOT EXISTS mode for loading
+- SQL Migration Loader
 
   
 ## NORM vs. ORM: Features Comparison  
@@ -119,7 +120,31 @@ connection.commit()
 connection.close()  
 ```  
 
-  
+### Using exists Mode
+Calling Database.create with exists=True inserts a IF NOT EXISTS into all of your CREATE statements allowing you to easily add new items.
+
+```python
+universe.create(cursor, exists=True)
+```
+
+### Doing migrations
+Update your `DatabaseItem`s and write your SQL migration transaction.  If you create your Database instance with 
+a `migrations_folder` they will run during the create call.  Migration files should ideally be prefixed with a 
+load order (ex: 0001) and must end with `.sql`.
+
+```python
+universe = Database(
+    load_order=[
+        Material, get_material_for_variant,
+        [Player, Inventory],  # example of grouping DatabaseItems into a transaction
+    ],
+    extensions=['uuid-ossp', 'plpython3u', 'pgcrypto'],
+    migrations_folder='/example/folder/path'
+)
+
+```
+
+
 ## Contributing  
   
 Please submit a pull request or create an issue if you have any suggestions or improvements.  

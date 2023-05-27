@@ -1,3 +1,7 @@
+## v0.0.3 (2023-05-26)
+
+* Migrations: specify a migrations_folder and write SQL migrations that are loaded in Database.create
+
 ## v0.0.2 (2023-05-19)
 
 * SchemaItem -> DatabaseItem: the term schema has some meaning in a PostgreSQL database.  Starting to change SchemaItems into DatabaseItems in order to create a way to manage real PostgreSQL schemas
