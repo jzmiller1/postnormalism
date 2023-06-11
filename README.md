@@ -4,8 +4,8 @@ postnormalism is Not an Object Relational Mapper (NORM) it is a lightweight and 
   
 ## Features  
   
-- Define tables and functions using Python dataclasses  
-- Create database items (Tables, Functions) with comments
+- Define schemas, tables and functions using Python dataclasses  
+- Create database items (Schemas, Tables, Functions) with comments
 - Group related database items and create them within a single transaction  
 - Create a Database object that allows loading database items in a specified load order and managing database extensions
 - IF NOT EXISTS mode for loading
@@ -51,7 +51,23 @@ pip install postnormalism
 To define a table or a function, use the `Table` and `Function` dataclasses from the `postnormalism` module:  
   
 ```python  
-from postnormalism.schema import Table, Function  
+from postnormalism.schema import Schema, Table, Function  
+```
+
+### Define a Schema
+```python
+from postnormalism import schema
+
+create = """
+CREATE SCHEMA basic_auth;
+"""
+
+comment = """
+COMMENT ON SCHEMA basic_auth IS
+  $$ The basic auth schema $$;
+"""
+
+basic_auth = schema.Schema(create=create, comment=comment)
 ```
   
 ### Define a Table
@@ -99,10 +115,11 @@ To create database items in a PostgreSQL database, use the `Database` class:
 ```python  
 import psycopg  
 from postnormalism.schema import Database
-from your_example_file import Material, get_material_for_variant
+from your_example_file import Material, get_material_for_variant, Player, Inventory, basic_auth
 
 universe = Database(
     load_order=[
+        basic_auth,
         Material, get_material_for_variant,
         [Player, Inventory],  # example of grouping DatabaseItems into a transaction
     ],

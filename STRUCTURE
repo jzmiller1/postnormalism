@@ -13,6 +13,7 @@
 |   |   |-- database_item.py
 |   |   |-- function.py
 |   |   |-- migrations.py
+|   |   |-- schema.py
 |   |   |-- table.py
 |   |-- utils.py
 |-- pyproject.toml

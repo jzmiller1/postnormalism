@@ -9,17 +9,26 @@ class DatabaseItem:
     """
     create: str
     comment: str = field(default=None)
+    _name_pattern: str = field(default=None)
     _name: str = field(init=False, default=None)
+    _schema_pattern: str = field(default=None)
+    _schema: str = field(init=False, default=None)
 
-    def __post_init__(self, name_pattern: str = None):
-        if name_pattern:
-            create = self.create.upper()
-            match = re.search(name_pattern, create)
+    def __post_init__(self):
+        create = self.create.upper()
 
-            if match:
-                object.__setattr__(self, '_name', match.group(1).lower())
-            else:
-                raise ValueError("Could not parse the name from the create statement")
+        schema_match = re.search(self._schema_pattern, create) if self._schema_pattern else None
+        object.__setattr__(
+            self,
+            '_schema',
+            schema_match.group(1).lower() if schema_match else 'public'
+        )
+
+        name_match = re.search(self._name_pattern, create) if self._name_pattern else None
+        if name_match:
+            object.__setattr__(self, '_name', name_match.group(1).lower())
+        else:
+            raise ValueError("Could not parse the name from the create statement")
 
     def full_sql(self, exists=False) -> str:
         """
@@ -35,3 +44,7 @@ class DatabaseItem:
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def schema(self) -> str:
+        return self._schema

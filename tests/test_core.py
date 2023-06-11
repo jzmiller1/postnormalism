@@ -1,10 +1,10 @@
 import unittest
 from unittest.mock import MagicMock
 from postnormalism import schema
-from postnormalism.core import create_schema
+from postnormalism.core import create_items
 
 
-def create_example_schema_items():
+def create_example_items():
     create_table = """
     CREATE TABLE example (
         id SERIAL PRIMARY KEY,
@@ -29,13 +29,13 @@ def create_example_schema_items():
 class TestCore(unittest.TestCase):
     def test_create_schema(self):
         """Test if create_schema executes the correct SQL statements."""
-        load_order = create_example_schema_items()
+        load_order = create_example_items()
 
         # Create a mock cursor object
         mock_cursor = MagicMock()
 
         # Call create_schema with the mock cursor
-        create_schema(load_order, mock_cursor)
+        create_items(load_order, mock_cursor)
 
         # Assert the correct SQL statements were executed
         for item in load_order:
@@ -50,7 +50,7 @@ class TestCore(unittest.TestCase):
 
         # Call create_schema with an empty load_order and assert that no exceptions are raised
         try:
-            create_schema(load_order, cursor)
+            create_items(load_order, cursor)
         except Exception as e:
             self.fail(f"Unexpected exception raised: {e}")
 
