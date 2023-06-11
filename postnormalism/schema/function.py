@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .database_item import DatabaseItem
 
@@ -9,6 +9,4 @@ class Function(DatabaseItem):
     A data class for functions.
     """
 
-    def __post_init__(self):
-        function_name_pattern = r'CREATE\s+(?:OR\s+REPLACE\s+)?(?:TEMP\s+)?(?:FUNCTION)\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:\w+\.)?(\w+)'
-        super().__post_init__(function_name_pattern)
+    _name_pattern: str = field(default=r'CREATE\s+(?:OR\s+REPLACE\s+)?(?:TEMP\s+)?(?:FUNCTION)\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:\w+\.)?(\w+)')

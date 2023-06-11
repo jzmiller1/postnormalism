@@ -1,3 +1,13 @@
+## v0.0.4 (2023-06-11)
+
+* add ability to create Schema
+* cleaning up more naming and references related to the SchemaItem -> DatabaseItem change in v0.0.2
+* use _name_pattern attribute to avoid defining a __post_init__ on all DatabaseItems
+* add additional tests
+* add GitHub action to run tests
+* add GitHub action to release to PyPI
+
+
 ## v0.0.3 (2023-05-26)
 
 * Migrations: specify a migrations_folder and write SQL migrations that are loaded in Database.create

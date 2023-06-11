@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass, field
-from ..core import create_schema, create_extensions
-from . import DatabaseItem, Table, Function, PostnormalismMigrations
+from ..core import create_items, create_extensions
+from . import DatabaseItem, Table, Function, PostnormalismMigrations, Schema
 
 
 @dataclass
@@ -29,6 +29,7 @@ class Database:
         type_mapping = {
             "table": Table,
             "function": Function,
+            "schema": Schema,
         }
 
         if item_type not in type_mapping:
@@ -53,7 +54,7 @@ class Database:
             self.apply_migrations(cursor)  # Apply pending migrations
 
         create_extensions(self.extensions, cursor)
-        create_schema(self.load_order, cursor, exists=exists)
+        create_items(self.load_order, cursor, exists=exists)
 
     @staticmethod
     def check_table_exists(cursor, table_name):

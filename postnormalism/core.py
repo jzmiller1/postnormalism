@@ -30,16 +30,16 @@ def create_schema_items_in_transaction(schema_items: list[schema.DatabaseItem], 
     return "\n\n".join(sql_parts)
 
 
-def create_schema(load_order: list[schema.DatabaseItem | list[schema.DatabaseItem]], cursor, exists=False):
+def create_items(load_order: list[schema.DatabaseItem | list[schema.DatabaseItem]], cursor, exists=False):
     """
-    Create schema items in a specified load order.
+    Create database items in a specified load order.
     """
     for item_or_group in load_order:
         if isinstance(item_or_group, list):
             # For related tables or functions, create them within a single transaction
             transaction_sql = create_schema_items_in_transaction(item_or_group, exists=exists)
             cursor.execute(transaction_sql)
-        elif isinstance(item_or_group, (schema.Table, schema.Function)):
+        elif isinstance(item_or_group, (schema.Schema, schema.Table, schema.Function)):
             # For tables and functions, execute the full_sql
             cursor.execute(item_or_group.full_sql(exists=exists))
         else:
