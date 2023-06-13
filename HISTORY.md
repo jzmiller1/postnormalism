@@ -1,3 +1,11 @@
+## v0.0.5 (2023-06-12)
+
+* add ability to create View and Trigger
+* changed Database.get_items_by_type to return DatabaseItems instead of name strings
+* added _item_type and itype property to DatabaseItem and set itypes for tables, views, etc
+* modified functions to handle Exists mode with OR REPLACE
+* renamed GitHub tests action to Tests, increased number of tests and enhanced organization of tests
+
 ## v0.0.4 (2023-06-11)
 
 * add ability to create Schema
@@ -6,7 +14,6 @@
 * add additional tests
 * add GitHub action to run tests
 * add GitHub action to release to PyPI
-
 
 ## v0.0.3 (2023-05-26)
 

@@ -9,6 +9,7 @@ class DatabaseItem:
     """
     create: str
     comment: str = field(default=None)
+    _item_type: str = field(default=None)
     _name_pattern: str = field(default=None)
     _name: str = field(init=False, default=None)
     _schema_pattern: str = field(default=None)
@@ -48,3 +49,7 @@ class DatabaseItem:
     @property
     def schema(self) -> str:
         return self._schema
+
+    @property
+    def itype(self) -> str:
+        return self._item_type

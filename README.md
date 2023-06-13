@@ -4,11 +4,11 @@ postnormalism is Not an Object Relational Mapper (NORM) it is a lightweight and 
   
 ## Features  
   
-- Define schemas, tables and functions using Python dataclasses  
-- Create database items (Schemas, Tables, Functions) with comments
+- Define schemas, tables, views, triggers and functions using Python dataclasses  
+- Create database items with comments
 - Group related database items and create them within a single transaction  
 - Create a Database object that allows loading database items in a specified load order and managing database extensions
-- IF NOT EXISTS mode for loading
+- exists mode for loading database items with IF NOT EXISTS and OR REPLACE 
 - SQL Migration Loader
 
   
@@ -51,7 +51,7 @@ pip install postnormalism
 To define a table or a function, use the `Table` and `Function` dataclasses from the `postnormalism` module:  
   
 ```python  
-from postnormalism.schema import Schema, Table, Function  
+from postnormalism.schema import Schema, Table, Function, View, Trigger  
 ```
 
 ### Define a Schema
@@ -138,7 +138,7 @@ connection.close()
 ```  
 
 ### Using exists Mode
-Calling Database.create with exists=True inserts a IF NOT EXISTS into all of your CREATE statements allowing you to easily add new items.
+Calling Database.create with exists=True inserts IF NOT EXISTS or OR REPLACE into all of your CREATE statements allowing you to easily add new items.
 
 ```python
 universe.create(cursor, exists=True)

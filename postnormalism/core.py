@@ -39,7 +39,7 @@ def create_items(load_order: list[schema.DatabaseItem | list[schema.DatabaseItem
             # For related tables or functions, create them within a single transaction
             transaction_sql = create_schema_items_in_transaction(item_or_group, exists=exists)
             cursor.execute(transaction_sql)
-        elif isinstance(item_or_group, (schema.Schema, schema.Table, schema.Function)):
+        elif isinstance(item_or_group, schema.DatabaseItem):
             # For tables and functions, execute the full_sql
             cursor.execute(item_or_group.full_sql(exists=exists))
         else:

@@ -8,6 +8,7 @@ class Schema(DatabaseItem):
     """
     A data class for schema.
     """
+    _item_type: str = 'schema'
     _name_pattern: str = field(default=r'CREATE\s+SCHEMA\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)')
     alter: str = field(default=None)
 
