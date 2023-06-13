@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import MagicMock
-from postnormalism.schema import Table, Function
+from postnormalism.schema import Table
 
 
-class TestSchema(unittest.TestCase):
+class TestTable(unittest.TestCase):
     def test_table_full_sql(self):
         """Test that the full_sql method of the Table class returns the expected SQL statement."""
         create_table = """
@@ -17,21 +17,6 @@ class TestSchema(unittest.TestCase):
         expected_sql = create_table.strip()
 
         self.assertEqual(table.full_sql(), expected_sql)
-
-    def test_function_full_sql(self):
-        """Test that the full_sql method of the Function class returns the expected SQL statement."""
-        create_function = """
-        CREATE FUNCTION example_function() RETURNS INTEGER AS $$
-        BEGIN
-            RETURN 42;
-        END;
-        $$ LANGUAGE plpgsql;
-        """
-
-        function = Function(create=create_function)
-        expected_sql = create_function.strip()
-
-        self.assertEqual(function.full_sql(), expected_sql)
 
     def test_table_sql_not_executed(self):
         """Test that the SQL statements are not executed when creating a Table object."""
@@ -50,23 +35,7 @@ class TestSchema(unittest.TestCase):
         # Assert the SQL statements were not executed on table creation
         mock_cursor.execute.assert_not_called()
 
-    def test_function_sql_not_executed(self):
-        """Test that the SQL statements are not executed when creating a Function object."""
-        create_function = """
-        CREATE FUNCTION example_function() RETURNS INTEGER AS $$
-        BEGIN
-            RETURN 42;
-        END;
-        $$ LANGUAGE plpgsql;
-        """
 
-        function = Function(create=create_function)
-
-        # Create a mock cursor object
-        mock_cursor = MagicMock()
-
-        # Assert the SQL statements were not executed on function creation
-        mock_cursor.execute.assert_not_called()
 
     def test_table_full_sql_with_alter(self):
         """Test that the full_sql method of the Table class includes the ALTER statement if provided."""
@@ -149,6 +118,3 @@ class TestSchema(unittest.TestCase):
         expected_sql = f"{create_table.strip()}\n\n{table_comment.strip()}"
         self.assertEqual(table.full_sql(), expected_sql)
 
-
-if __name__ == '__main__':
-    unittest.main()

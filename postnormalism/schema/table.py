@@ -8,6 +8,7 @@ class Table(DatabaseItem):
     """
     A data class for tables.
     """
+    _item_type: str = 'table'
     _name_pattern: str = field(default=r'CREATE\s+(?:OR\s+REPLACE\s+)?(?:TEMP\s+)?(?:TABLE)\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:\w+\.)?(\w+)')
     _schema_pattern: str = field(default=r'CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)\.\w+')
     alter: str = field(default=None)

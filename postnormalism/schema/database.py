@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass, field
 from ..core import create_items, create_extensions
-from . import DatabaseItem, Table, Function, PostnormalismMigrations, Schema
+from . import DatabaseItem, Table, Function, PostnormalismMigrations, Schema, View, Trigger
 
 
 @dataclass
@@ -30,6 +30,8 @@ class Database:
             "table": Table,
             "function": Function,
             "schema": Schema,
+            "view": View,
+            "trigger": Trigger,
         }
 
         if item_type not in type_mapping:
@@ -37,7 +39,7 @@ class Database:
 
         lookup_type = type_mapping[item_type]
         return [
-            name for name, item in self.items.items()
+            item for name, item in self.items.items()
             if isinstance(item, lookup_type)
         ]
 
