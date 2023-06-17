@@ -164,7 +164,17 @@ universe = Database(
 
 ## Contributing  
   
-Please submit a pull request or create an issue if you have any suggestions or improvements.  
+Please submit a start a discussion, create a pull request or create an issue if you have any suggestions or improvements.  
+
+### Primary Authors
+
+- @jzmiller1 (Zac Miller)
+
+### Other Contributors
+
+- @ggopi19
+- @malu1112
+
   
 ## License  
   

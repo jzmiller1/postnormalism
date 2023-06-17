@@ -1,9 +1,9 @@
 import os
 
 
-def generate_project_structure(root: str, exclude_dirs=None, indent: str = "|   ") -> str:
+def generate_project_structure(root: str, exclude_dirs: set = None, indent: str = "|   ") -> str:
     if exclude_dirs is None:
-        exclude_dirs = {'.idea', '__pycache__'}
+        exclude_dirs = {'.idea', '__pycache__', '.git', 'build', 'dist', 'postnormalism.egg-info'}
 
     def walk(path: str, level: int = 0) -> str:
         output = ""
