@@ -35,8 +35,6 @@ class TestTable(unittest.TestCase):
         # Assert the SQL statements were not executed on table creation
         mock_cursor.execute.assert_not_called()
 
-
-
     def test_table_full_sql_with_alter(self):
         """Test that the full_sql method of the Table class includes the ALTER statement if provided."""
         create_table = """
@@ -118,3 +116,72 @@ class TestTable(unittest.TestCase):
         expected_sql = f"{create_table.strip()}\n\n{table_comment.strip()}"
         self.assertEqual(table.full_sql(), expected_sql)
 
+    def test_simple_create_table_column_extraction(self):
+        sql = """
+        CREATE TABLE material (
+            id UUID PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            description TEXT
+        );
+        """
+        table = Table(create=sql)
+        self.assertEqual(table.columns, ["id", "name", "description"])
+
+    def test_complex_create_table_column_extraction(self):
+        sql = """
+        CREATE TABLE user_account (
+            id UUID PRIMARY KEY,
+            username VARCHAR(50) NOT NULL UNIQUE,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP,
+            status VARCHAR(20) CHECK (status IN ('active', 'inactive', 'suspended')),
+            profile_id UUID REFERENCES user_profile(id),
+            bio TEXT DEFAULT ''
+        );
+        """
+        table = Table(create=sql)
+        expected_columns = ["id", "username", "email", "created_at", "updated_at", "status", "profile_id", "bio"]
+        self.assertEqual(table.columns, expected_columns)
+
+    def test_table_with_constraints_and_defaults(self):
+        sql = """
+        CREATE TABLE orders (
+            order_id SERIAL PRIMARY KEY,
+            customer_id INT NOT NULL,
+            order_date DATE NOT NULL DEFAULT CURRENT_DATE,
+            amount NUMERIC(10, 2) CHECK (amount > 0),
+            status VARCHAR(20) DEFAULT 'pending',
+            notes TEXT
+        );
+        """
+        table = Table(create=sql)
+        expected_columns = ["order_id", "customer_id", "order_date", "amount", "status", "notes"]
+        self.assertEqual(table.columns, expected_columns)
+
+    def test_simple_create_table_column_extraction_multiple_per_line(self):
+        sql = """
+        CREATE TABLE material (
+            id UUID PRIMARY KEY, name VARCHAR(255) NOT NULL, description TEXT
+        );
+        """
+        table = Table(create=sql)
+        self.assertEqual(table.columns, ["id", "name", "description"])
+
+    def test_create_table_with_alter_table(self):
+        sql_create = """
+        CREATE TABLE orders (
+            order_id SERIAL PRIMARY KEY,
+            customer_id INT NOT NULL,
+            order_date DATE NOT NULL DEFAULT CURRENT_DATE
+        );
+        """
+        sql_alter = """
+        ALTER TABLE orders
+        ADD COLUMN amount NUMERIC(10, 2) CHECK (amount > 0),
+        ADD COLUMN status VARCHAR(20) DEFAULT 'pending',
+        ADD COLUMN notes TEXT;
+        """
+        table = Table(create=sql_create, alter=sql_alter)
+        expected_columns = ["order_id", "customer_id", "order_date", "amount", "status", "notes"]
+        self.assertEqual(table.columns, expected_columns)
