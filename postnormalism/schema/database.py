@@ -1,52 +1,115 @@
 import os
 from dataclasses import dataclass, field
 from ..core import create_items, create_extensions
-from . import DatabaseItem, Table, Function, PostnormalismMigrations, Schema, View, Trigger
+from . import DatabaseItem, PostnormalismMigrations, Schema
+
+
+class SchemaProxy:
+    def __init__(self, schema: Schema):
+        self._schema = schema
+        self._items = {}
+
+    def add_item(self, item: DatabaseItem):
+        item_name = getattr(item, 'name', None).lower()
+        self._items[item_name] = item
+        setattr(self, item_name, item)
+
+    def __getattr__(self, name: str):
+        if name in self._items:
+            return self._items[name]
+        raise AttributeError(f"Schema proxy object has no attribute '{name}'")
+
+    def __repr__(self):
+        return f"<SchemaProxy for {self._schema.name}>"
 
 
 @dataclass
 class Database:
     migrations_folder: str = field(default=None)
-    items: dict[str, DatabaseItem] = field(default_factory=dict)
     load_order: list[DatabaseItem | list[DatabaseItem]] = field(default_factory=list)
     extensions: list[str] = field(default_factory=list)
+    verbose: bool = field(default=False)
+    _schema_contents: dict[str, dict[str, DatabaseItem]] = field(default_factory=dict, init=False)
 
     def __post_init__(self):
+        self.items_by_type = {}
+        schema_loaded = {"public"}
         if self.migrations_folder:
             if not os.path.isdir(self.migrations_folder):
                 print("Invalid migrations folder.")
         for entry in self.load_order:
             if isinstance(entry, list):
-                self.add_items(*entry)
+                self.add_items(*entry, schema_loaded=schema_loaded)
             else:
-                self.add_items(entry)
+                self.add_items(entry, schema_loaded=schema_loaded)
 
-    def add_items(self, *items: DatabaseItem) -> None:
+    def add_items(self, *items: DatabaseItem, schema_loaded: set) -> None:
         for item in items:
-            self.items[item.name] = item
+            item_type = type(item).__name__
 
-    def get_items_by_type(self, item_type: str):
-        type_mapping = {
-            "table": Table,
-            "function": Function,
-            "schema": Schema,
-            "view": View,
-            "trigger": Trigger,
-        }
+            if isinstance(item, Schema):
+                schema_name = item.name.lower()
+                schema_loaded.add(schema_name)
+                object.__setattr__(self, schema_name, item)
+                self._schema_contents[schema_name] = {}
+                if self.verbose:
+                    print(f"Schema '{schema_name}' registered.")
+            else:
+                schema_name = getattr(item, 'schema', 'public').lower()
+                item_name = getattr(item, 'name', None).lower()
 
-        if item_type not in type_mapping:
+                if self.verbose:
+                    print(f"Processing item: {item_name}, Type: {item_type}, Schema: {schema_name}")
+
+                if schema_name not in schema_loaded:
+                    raise ValueError(f"Schema '{schema_name}' must be loaded before items in that schema.")
+
+                if schema_name == 'public':
+                    object.__setattr__(self, item_name, item)
+                else:
+                    schema_object = getattr(self, schema_name, None)
+                    if schema_object:
+                        schema_object.add_item(item_name, item)
+                    else:
+                        raise AttributeError(f"Schema '{schema_name}' not found in the database object.")
+
+            if self.verbose:
+                print(f"Registered schemas: {self._schema_contents.keys()}")
+
+            item_type = item_type.lower()
+            if item_type not in self.items_by_type:
+                self.items_by_type[item_type] = []
+            self.items_by_type[item_type].append(item)
+
+    def get_items_by_type(self, item_type: str) -> list:
+        allowed_database_items = ["table", "function", "schema", "view", "trigger"]
+        item_type = item_type.lower()
+        if item_type not in allowed_database_items:
             raise ValueError(f"Invalid item_type: {item_type}")
-
-        lookup_type = type_mapping[item_type]
-        return [
-            item for name, item in self.items.items()
-            if isinstance(item, lookup_type)
-        ]
+        return self.items_by_type.get(item_type, [])
 
     def __getattr__(self, name: str):
-        if name in self.items:
-            return self.items[name]
-        raise AttributeError(f"Schema object has no attribute '{name}'")
+        if '_schemas' in self.__dict__ and name in self.__dict__['_schemas']:
+            return self.__dict__['_schemas'][name]
+
+        if name in self.__dict__:
+            return self.__dict__[name]
+
+        raise AttributeError(f"Database object has no attribute '{name}'")
+
+    def _create_schema_proxy(self, schema_name: str):
+        class SchemaProxy:
+            def __init__(self, items):
+                self._items = items
+
+            def __getattr__(self, item_name: str):
+                try:
+                    return self._items[item_name]
+                except KeyError:
+                    raise AttributeError(f"Schema '{schema_name}' has no attribute '{item_name}'")
+
+        return SchemaProxy(self._schema_contents[schema_name])
+
 
     def create(self, cursor, exists=False):
         if self.migrations_folder:

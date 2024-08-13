@@ -1,5 +1,5 @@
 import unittest
-from postnormalism.schema import Schema
+from postnormalism.schema import Schema, Table
 
 
 class TestSchema(unittest.TestCase):
@@ -56,6 +56,27 @@ class TestSchema(unittest.TestCase):
         """
         schema = Schema(create=create_schema)
         self.assertEqual(schema.name, "example")
+
+    def test_add_item(self):
+        create_table = """
+        CREATE TABLE example_table (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL
+        );
+        """
+
+        table = Table(create=create_table)
+        schema = Schema(create="CREATE SCHEMA example;")
+        schema.add_item("example_table", table)
+
+        # Check if the item was added correctly
+        self.assertEqual(schema.example_table, table)
+
+    def test_add_item_attribute_error(self):
+        schema = Schema(create="CREATE SCHEMA example;")
+
+        with self.assertRaises(AttributeError):
+            _ = schema.non_existing_item
 
 
 if __name__ == '__main__':
