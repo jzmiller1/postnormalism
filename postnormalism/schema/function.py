@@ -10,7 +10,8 @@ class Function(DatabaseItem):
     """
 
     _item_type: str = 'function'
-    _name_pattern: str = field(default=r'CREATE\s+(?:OR\s+REPLACE\s+)?(?:TEMP\s+)?(?:FUNCTION)\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:\w+\.)?(\w+)')
+    _name_pattern: str = field(default=r'CREATE\s+(?:OR\s+REPLACE\s+)?(?:TEMP\s+)?FUNCTION\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:\w+\.)?(\w+)')
+    _schema_pattern: str = field(default=r'CREATE\s+(?:OR\s+REPLACE\s+)?(?:TEMP\s+)?FUNCTION\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)\.')
 
     def full_sql(self, exists=False) -> str:
         sql_parts = super().full_sql().split("\n\n")

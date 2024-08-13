@@ -80,3 +80,29 @@ class TestFunction(unittest.TestCase):
         function = Function(create=self.create_function, comment=self.function_comment)
         expected_sql = f"{self.create_function.strip()}\n\n{self.function_comment.strip()}"
         self.assertEqual(function.full_sql(), expected_sql)
+
+    def test_function_with_schema(self):
+        create_statement = """
+        CREATE FUNCTION api.function_name(param INT)
+        RETURNS VOID AS $$
+        BEGIN
+            -- function body
+        END;
+        $$ LANGUAGE plpgsql;
+        """
+        function = Function(create=create_statement)
+        self.assertEqual(function.schema, 'api')
+        self.assertEqual(function.name, 'function_name')
+
+    def test_function_without_schema(self):
+        create_statement = """
+        CREATE FUNCTION function_name(param INT)
+        RETURNS VOID AS $$
+        BEGIN
+            -- function body
+        END;
+        $$ LANGUAGE plpgsql;
+        """
+        function = Function(create=create_statement)
+        self.assertEqual(function.schema, 'public')
+        self.assertEqual(function.name, 'function_name')

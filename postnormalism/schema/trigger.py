@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass, field
 
 from .database_item import DatabaseItem
@@ -18,3 +19,14 @@ class Trigger(DatabaseItem):
             sql_parts[0] = sql_parts[0].replace("CREATE TRIGGER", "CREATE OR REPLACE TRIGGER")
 
         return "\n\n".join(sql_parts)
+
+    @property
+    def schema(self) -> str:
+        """
+        Derive the schema from the associated table/view.
+        This assumes that the table/view is correctly referenced in the CREATE TRIGGER statement.
+        """
+        match = re.search(r'\bON\s+(\w+)\.(\w+)\b', self.create)
+        if match:
+            return match.group(1).lower()
+        return 'public'
