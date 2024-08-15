@@ -51,9 +51,18 @@ class Table(DatabaseItem):
             if in_table_definition:
                 parts = line.split(',')
                 for part in parts:
-                    match = re.match(self._pattern_create, part.strip())
+                    part = part.strip()
+
+                    if part.upper().startswith("UNIQUE") or part.upper().startswith("CHECK"):
+                        continue
+                    match = re.match(self._pattern_create, part)
                     if match:
                         columns.append(match.group(1))
+                    else:
+                        column_and_constraint = re.match(r"^\s*(\w+)\s+.*(?:UNIQUE|CHECK)\s*\(.*\)", part,
+                                                         re.IGNORECASE)
+                        if column_and_constraint:
+                            columns.append(column_and_constraint.group(1))
 
         if self.alter:
             for line in self.alter.splitlines():

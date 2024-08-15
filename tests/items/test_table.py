@@ -217,3 +217,23 @@ class TestTable(unittest.TestCase):
             "id", "created_at", "updated_at", "element"
         ]
         self.assertEqual(universe_db.process_element_material.columns, expected_columns)
+
+    def test_exclude_check_and_unique_constraints(self):
+        create_statement = """
+        CREATE TABLE process_action (
+            id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+            process uuid REFERENCES process NOT NULL,
+            target uuid NOT NULL,
+            calculated uuid REFERENCES attribute NOT NULL,
+            description varchar(240),
+            action_type varchar(10) NOT NULL,
+            CHECK (action_type = 'linear' OR action_type = 'inplace'),
+            UNIQUE (process, target, calculated)
+        );
+        """
+
+        expected_columns = [
+            'id', 'process', 'target', 'calculated', 'description', 'action_type'
+        ]
+        process_action_table = Table(create=create_statement)
+        self.assertEqual(process_action_table.columns, expected_columns)
