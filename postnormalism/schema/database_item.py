@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
 import re
+import warnings
 
 
 @dataclass(frozen=True)
 class DatabaseItem:
     """
-    A base data class for schema items like tables and functions.
+    A base data class for schema items like tables, functions, etc.
     """
     create: str
     comment: str = field(default=None)
@@ -14,6 +15,7 @@ class DatabaseItem:
     _name: str = field(init=False, default=None)
     _schema_pattern: str = field(default=None)
     _schema: str = field(init=False, default=None)
+    _database: object = field(default=None, init=False, repr=False)  # Internal use only
 
     def __post_init__(self):
         create = self.create.upper()
@@ -53,3 +55,20 @@ class DatabaseItem:
     @property
     def itype(self) -> str:
         return self._item_type
+
+    @property
+    def database(self):
+        """Get the database reference."""
+        return self._database
+
+    @database.setter
+    def database(self, db):
+        """Set the database reference for this item."""
+        object.__setattr__(self, '_database', db)
+
+    def warn_if_no_database(self):
+        """Warn if the database is not set and required for operations."""
+        if not self.database:
+            warnings.warn(
+                f"Database reference is not set for '{self.name}'. Certain operations may not work correctly."
+            )

@@ -1,7 +1,8 @@
 import os
 from dataclasses import dataclass, field
+
 from ..core import create_items, create_extensions
-from . import DatabaseItem, PostnormalismMigrations, Schema
+from . import DatabaseItem, PostnormalismMigrations, Schema, Table
 
 
 class SchemaProxy:
@@ -38,10 +39,20 @@ class Database:
             if not os.path.isdir(self.migrations_folder):
                 print("Invalid migrations folder.")
         for entry in self.load_order:
+            self._set_database_reference(entry)
             if isinstance(entry, list):
                 self.add_items(*entry, schema_loaded=schema_loaded)
             else:
                 self.add_items(entry, schema_loaded=schema_loaded)
+
+    def _set_database_reference(self, item: DatabaseItem):
+        if isinstance(item, list):
+            for sub_item in item:
+                self._set_database_reference(sub_item)
+        else:
+            object.__setattr__(item, '_database', self)
+            if isinstance(item, Table):
+                item._initialize_columns()
 
     def add_items(self, *items: DatabaseItem, schema_loaded: set) -> None:
         for item in items:

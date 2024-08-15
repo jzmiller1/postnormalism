@@ -185,3 +185,35 @@ class TestTable(unittest.TestCase):
         table = Table(create=sql_create, alter=sql_alter)
         expected_columns = ["order_id", "customer_id", "order_date", "amount", "status", "notes"]
         self.assertEqual(table.columns, expected_columns)
+
+    def test_inherited_table_columns(self):
+        create_parent = """
+        CREATE TABLE process_element (
+            id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+
+        create_child = """
+        CREATE TABLE process_element_material (
+            element uuid REFERENCES material NOT NULL
+        ) INHERITS (process_element);
+        """
+
+        ProcessElement = Table(create=create_parent)
+        ProcessElementMaterial = Table(create=create_child)
+
+        from postnormalism.schema import Database
+
+        universe_db = Database(
+            load_order=[
+                ProcessElement,
+                ProcessElementMaterial,
+            ],
+        )
+
+        expected_columns = [
+            "id", "created_at", "updated_at", "element"
+        ]
+        self.assertEqual(universe_db.process_element_material.columns, expected_columns)
