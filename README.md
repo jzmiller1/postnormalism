@@ -4,10 +4,11 @@ postnormalism is Not an Object Relational Mapper (NORM) it is a lightweight and 
   
 ## Features  
   
-- Define schemas, tables, views, triggers and functions using Python dataclasses  
+- Manage the creation of schemas, tables, views, triggers and functions using Python dataclasses
 - Create database items with comments
 - Group related database items and create them within a single transaction  
 - Create a Database object that allows loading database items in a specified load order and managing database extensions
+- Access database objects through the Database class using dot notation, with schema-based grouping (e.g., `db.schema_name.table_name`).
 - exists mode for loading database items with IF NOT EXISTS and OR REPLACE 
 - SQL Migration Loader
 
@@ -83,6 +84,30 @@ description varchar(240)
 """  
   
 Material = Table(create=create_table_sql)  
+
+# Access the columns
+print(Material.columns)  # Outputs: ['id', 'name', 'description']
+
+# Define a parent table
+create_parent_table_sql = """  
+CREATE TABLE parent_table (  
+id uuid PRIMARY KEY,  
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
+);  
+"""
+
+# Define a child table that inherits from the parent table
+create_child_table_sql = """  
+CREATE TABLE child_table (  
+name varchar(120)  
+) INHERITS (parent_table);  
+"""
+
+ParentTable = Table(create=create_parent_table_sql)
+ChildTable = Table(create=create_child_table_sql)
+
+# The child table's columns will include those from the parent table
+print(ChildTable.columns)  # Outputs: ['id', 'created_at', 'name']
 ```
   
 ### Define a Postgresql Function  
@@ -142,6 +167,15 @@ Calling Database.create with exists=True inserts IF NOT EXISTS or OR REPLACE int
 
 ```python
 universe.create(cursor, exists=True)
+```
+
+### Accessing Schema Objects via Dot Notation
+You can now access tables, views, and other schema objects directly through the `Database` instance using dot notation:
+
+```python
+# Assuming you have already defined a schema and table
+print(db.schema_name.table_name.name)  # Outputs the table name
+print(db.schema_name.table_name.columns)  # Outputs the list of columns in the table
 ```
 
 ### Doing migrations

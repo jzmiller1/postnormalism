@@ -1,3 +1,11 @@
+## v0.0.6 (2024-08-16)
+
+* Enhanced the `Database` class to allow accessing schema objects via dot notation (e.g., `db.schema_name.table_name`)
+* Added the `.columns` attribute to the `Table` class to extract column names, supporting both simple and complex table definitions, including those with constraints
+* `.columns` properly handles inherited columns for tables using the `INHERITS` clause
+* Updated the `Database` class to enforce loading schemas before any dependent items, raising errors when schemas are not loaded in the correct order
+* Updated GitHub Actions workflows to support Python 3.12
+
 ## v0.0.5 (2023-06-12)
 
 * add ability to create View and Trigger

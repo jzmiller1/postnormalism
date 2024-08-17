@@ -2,15 +2,7 @@
 |   |-- workflows/
 |   |   |-- release.yml
 |   |   |-- test.yml
-|-- .gitignore
-|-- HISTORY.md
-|-- LICENSE
-|-- README.md
-|-- STRUCTURE
 |-- postnormalism/
-|   |-- VERSION
-|   |-- __init__.py
-|   |-- core.py
 |   |-- schema/
 |   |   |-- __init__.py
 |   |   |-- database.py
@@ -21,14 +13,24 @@
 |   |   |-- table.py
 |   |   |-- trigger.py
 |   |   |-- view.py
-|   |-- utils.py
-|-- pyproject.toml
-|-- tests/
 |   |-- __init__.py
+|   |-- core.py
+|   |-- utils.py
+|-- tests/
 |   |-- items/
 |   |   |-- __init__.py
 |   |   |-- test_function.py
 |   |   |-- test_schema.py
 |   |   |-- test_table.py
+|   |   |-- test_trigger.py
+|   |   |-- test_view.py
+|   |-- __init__.py
 |   |-- test_core.py
 |   |-- test_database.py
+|-- .gitignore
+|-- .gptignore
+|-- HISTORY.md
+|-- LICENSE
+|-- pyproject.toml
+|-- README.md
+|-- STRUCTURE

@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Generate VERSION file
-        run: echo "${{ github.event.release.tag_name }}" > interlocutor/VERSION
+        run: echo "${{ github.event.release.tag_name }}" > postnormalism/VERSION
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
