@@ -237,3 +237,40 @@ class TestTable(unittest.TestCase):
         ]
         process_action_table = Table(create=create_statement)
         self.assertEqual(process_action_table.columns, expected_columns)
+
+    def test_table_with_composite_primary_key(self):
+        create_table = """
+        CREATE TABLE material_attribute_map (
+            material UUID NOT NULL,
+            attribute UUID NOT NULL,
+            spread NUMERIC[],
+            PRIMARY KEY (material, attribute)
+        );
+        """
+
+        table = Table(create=create_table)
+        expected_columns = ["material", "attribute", "spread"]
+
+        self.assertEqual(table.columns, expected_columns)
+
+    def test_table_with_foreign_keys(self):
+        create_table = """
+        CREATE TABLE order_items (
+            order_id UUID NOT NULL,
+            product_id UUID NOT NULL,
+            quantity INT NOT NULL,
+            price NUMERIC(10, 2) NOT NULL,
+            discount NUMERIC(5, 2),
+            PRIMARY KEY (order_id, product_id),
+            FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+            FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+        );
+        """
+
+        table = Table(create=create_table)
+        expected_columns = [
+            "order_id", "product_id", "quantity", "price", "discount"
+        ]
+
+        self.assertEqual(table.columns, expected_columns)
+

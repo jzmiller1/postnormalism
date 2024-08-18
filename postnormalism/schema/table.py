@@ -53,13 +53,14 @@ class Table(DatabaseItem):
                 for part in parts:
                     part = part.strip()
 
-                    if part.upper().startswith("UNIQUE") or part.upper().startswith("CHECK"):
+                    if part.upper().startswith(("UNIQUE", "CHECK", "PRIMARY KEY", "FOREIGN")):
                         continue
                     match = re.match(self._pattern_create, part)
                     if match:
                         columns.append(match.group(1))
                     else:
-                        column_and_constraint = re.match(r"^\s*(\w+)\s+.*(?:UNIQUE|CHECK)\s*\(.*\)", part,
+                        # Handle cases where constraints are included with column definitions
+                        column_and_constraint = re.match(r"^\s*(\w+)\s+.*(?:UNIQUE|CHECK|PRIMARY KEY)\s*\(.*\)", part,
                                                          re.IGNORECASE)
                         if column_and_constraint:
                             columns.append(column_and_constraint.group(1))
@@ -69,6 +70,7 @@ class Table(DatabaseItem):
                 match = re.search(self._pattern_alter, line.strip(), re.IGNORECASE)
                 if match:
                     columns.append(match.group(1))
+        columns = list(dict.fromkeys(columns))
         object.__setattr__(self, '_columns', columns)
 
     def _extract_inherited_columns(self):
