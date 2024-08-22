@@ -1,4 +1,5 @@
 from .database_item import DatabaseItem
+from .domain import Domain
 from .schema import Schema
 from .function import Function
 from .table import Table

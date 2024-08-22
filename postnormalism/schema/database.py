@@ -93,7 +93,7 @@ class Database:
             self.items_by_type[item_type].append(item)
 
     def get_items_by_type(self, item_type: str) -> list:
-        allowed_database_items = ["table", "function", "schema", "view", "trigger"]
+        allowed_database_items = ["table", "function", "schema", "view", "trigger", "domain"]
         item_type = item_type.lower()
         if item_type not in allowed_database_items:
             raise ValueError(f"Invalid item_type: {item_type}")
