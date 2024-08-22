@@ -4,7 +4,7 @@ postnormalism is Not an Object Relational Mapper (NORM) it is a lightweight and 
   
 ## Features  
   
-- Manage the creation of schemas, tables, views, triggers and functions using Python dataclasses
+- Manage the creation of schemas, domains, tables, views, triggers and functions using Python dataclasses
 - Create database items with comments
 - Group related database items and create them within a single transaction  
 - Create a Database object that allows loading database items in a specified load order and managing database extensions

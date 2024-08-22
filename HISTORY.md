@@ -1,3 +1,8 @@
+## v0.0.7 (2024-08-21)
+
+* add ability to create Domains
+* properly handle composite primary keys and foreign keys in Tables during column extraction
+
 ## v0.0.6 (2024-08-16)
 
 * Enhanced the `Database` class to allow accessing schema objects via dot notation (e.g., `db.schema_name.table_name`)
